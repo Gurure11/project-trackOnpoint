@@ -427,6 +427,84 @@
             color: #fa709a;
         }
 
+        /* Daily Performance Section */
+        .daily-performance {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-left: 4px solid #1e3c72;
+        }
+
+        .daily-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .daily-header h3 {
+            color: #1e3c72;
+            font-size: 18px;
+        }
+
+        .daily-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            background: #f0f0f0;
+        }
+
+        .daily-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .daily-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .daily-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+        }
+
+        .daily-info {
+            flex: 1;
+        }
+
+        .daily-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .daily-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .daily-target {
+            font-size: 11px;
+            color: #999;
+        }
+
         /* Timeline Gantt Chart */
         .timeline-section {
             background: white;
@@ -866,6 +944,10 @@
                 grid-template-columns: 1fr;
             }
             
+            .daily-stats {
+                grid-template-columns: 1fr;
+            }
+            
             .logo-container {
                 flex-direction: column;
                 align-items: flex-start;
@@ -954,14 +1036,14 @@
                 </div>
                 <div class="date-item">
                     <label><i class="fas fa-calendar-day"></i> Today's Date</label>
-                    <input type="date" id="currentDate" onchange="updateMetrics()">
+                    <input type="date" id="currentDate" onchange="updateAllCalculations()">
                 </div>
             </div>
             
             <div class="form-grid">
                 <div class="form-group">
                     <label><i class="fas fa-file-invoice-dollar"></i> Total Project Income (ZAR)</label>
-                    <input type="number" id="totalInvoiced" placeholder="0.00" value="500000">
+                    <input type="number" id="totalInvoiced" placeholder="0.00" value="500000" onchange="updateAllCalculations()" onkeyup="updateAllCalculations()">
                 </div>
                 
                 <div class="form-group">
@@ -970,12 +1052,12 @@
                         <select id="durationNumber" onchange="calculateDates()">
                             <script>
                                 for(let i = 1; i <= 31; i++) {
-                                    document.write(`<option value="${i}">${i}</option>`);
+                                    document.write(`<option value="${i}" ${i === 30 ? 'selected' : ''}>${i}</option>`);
                                 }
                             </script>
                         </select>
                         <select id="durationType" onchange="calculateDates()">
-                            <option value="days">Days</option>
+                            <option value="days" selected>Days</option>
                             <option value="months">Months</option>
                             <option value="years">Years</option>
                         </select>
@@ -984,28 +1066,51 @@
                 
                 <div class="form-group">
                     <label><i class="fas fa-chart-pie"></i> Total Expenses Costs (ZAR)</label>
-                    <input type="number" id="totalCosts" placeholder="0.00" value="350000">
+                    <input type="number" id="totalCosts" placeholder="0.00" value="350000" onchange="updateAllCalculations()" onkeyup="updateAllCalculations()">
                 </div>
             </div>
             
             <div class="form-grid">
                 <div class="form-group">
-                    <label><i class="fas fa-bullseye"></i>Daily Target Set</label>
+                    <label><i class="fas fa-bullseye"></i> Overall Project Target</label>
                     <div class="target-group">
-                        <input type="number" id="targetValue" placeholder="Value" value="200">
-                        <select id="targetMeasure">
+                        <input type="number" id="overallTargetValue" placeholder="Total project target" value="1000" onchange="updateAllCalculations()" onkeyup="updateAllCalculations()">
+                        <select id="overallTargetMeasure" onchange="updateAllCalculations()">
                             <option value="meters">Meters</option>
                             <option value="km">Kilometers</option>
-                            <option value="stage">Stage</option>
-                            <option value="units">Units</option>
+                            <option value="units" selected>Units</option>
                             <option value="percentage">Percentage</option>
                         </select>
                     </div>
+                    <small style="color: #666;">Total project completion target</small>
                 </div>
                 
                 <div class="form-group">
-                    <label><i class="fas fa-chart-line"></i>Today's Actual Progress</label>
-                    <input type="number" id="actualProgress" placeholder="Enter value" value="150">
+                    <label><i class="fas fa-chart-line"></i> Overall Progress to Date</label>
+                    <input type="number" id="overallProgress" placeholder="Total completed to date" value="450" onchange="updateAllCalculations()" onkeyup="updateAllCalculations()">
+                    <small style="color: #666;">Total progress achieved so far</small>
+                </div>
+            </div>
+            
+            <div class="form-grid">
+                <div class="form-group">
+                    <label><i class="fas fa-bullseye"></i> Daily Target Set</label>
+                    <div class="target-group">
+                        <input type="number" id="dailyTargetValue" placeholder="Daily target" value="50" onchange="updateAllCalculations()" onkeyup="updateAllCalculations()">
+                        <select id="dailyTargetMeasure" onchange="updateAllCalculations()">
+                            <option value="meters">Meters</option>
+                            <option value="km">Kilometers</option>
+                            <option value="units" selected>Units</option>
+                            <option value="percentage">Percentage</option>
+                        </select>
+                    </div>
+                    <small style="color: #666;">Target for today's work</small>
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-chart-line"></i> Today's Actual Progress</label>
+                    <input type="number" id="actualProgress" placeholder="Today's achievement" value="45" onchange="updateAllCalculations()" onkeyup="updateAllCalculations()">
+                    <small style="color: #666;">Actual progress made today</small>
                 </div>
             </div>
         </div>
@@ -1015,68 +1120,111 @@
             <div class="metric-card">
                 <div class="metric-icon"><i class="fas fa-coins"></i></div>
                 <div class="metric-label">Daily Income</div>
-                <div class="metric-value" id="dailyIncome">R 2,739.73</div>
+                <div class="metric-value" id="dailyIncome">R 0.00</div>
                 <div class="metric-sub">Based on project duration</div>
             </div>
             
             <div class="metric-card green">
                 <div class="metric-icon"><i class="fas fa-credit-card"></i></div>
                 <div class="metric-label">Daily Expenses</div>
-                <div class="metric-value" id="dailyExpenses">R 1,917.81</div>
+                <div class="metric-value" id="dailyExpenses">R 0.00</div>
                 <div class="metric-sub">Operating costs per day</div>
             </div>
             
             <div class="metric-card orange">
                 <div class="metric-icon"><i class="fas fa-chart-bar"></i></div>
                 <div class="metric-label">Daily P/L</div>
-                <div class="metric-value" id="dailyProfit">R 821.92</div>
+                <div class="metric-value" id="dailyProfit">R 0.00</div>
                 <div class="metric-sub">Net daily earnings</div>
             </div>
         </div>
 
-        <!-- Progress Tracking -->
+        <!-- Daily Performance Section -->
+        <div class="daily-performance">
+            <div class="daily-header">
+                <h3><i class="fas fa-calendar-day"></i> Today's Performance</h3>
+                <span class="daily-badge" id="dailyStatusBadge">Behind Target</span>
+            </div>
+            <div class="daily-stats">
+                <div class="daily-card">
+                    <div class="daily-icon"><i class="fas fa-bullseye"></i></div>
+                    <div class="daily-info">
+                        <div class="daily-label">Daily Target</div>
+                        <div class="daily-value" id="dailyTargetDisplay">0 units</div>
+                    </div>
+                </div>
+                <div class="daily-card">
+                    <div class="daily-icon"><i class="fas fa-check-circle"></i></div>
+                    <div class="daily-info">
+                        <div class="daily-label">Today's Actual</div>
+                        <div class="daily-value" id="dailyActualDisplay">0 units</div>
+                    </div>
+                </div>
+                <div class="daily-card">
+                    <div class="daily-icon"><i class="fas fa-chart-line"></i></div>
+                    <div class="daily-info">
+                        <div class="daily-label">Daily Variance</div>
+                        <div class="daily-value" id="dailyVarianceDisplay">0 units</div>
+                        <div class="daily-target" id="dailyVariancePercent">0%</div>
+                    </div>
+                </div>
+                <div class="daily-card">
+                    <div class="daily-icon"><i class="fas fa-percent"></i></div>
+                    <div class="daily-info">
+                        <div class="daily-label">Daily Achievement</div>
+                        <div class="daily-value" id="dailyAchievement">0%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Project Overall Progress Tracking -->
         <div class="progress-section">
             <div class="progress-header">
-                <h3><i class="fas fa-tasks"></i> Project Progress</h3>
-                <div class="progress-badge at-risk" id="statusBadge">At Risk</div>
+                <h3><i class="fas fa-tasks"></i> Overall Project Progress</h3>
+                <div class="progress-badge at-risk" id="statusBadge">In Progress - 0% Complete</div>
             </div>
             
             <div class="progress-bar-container">
-                <div class="progress-bar" id="progressBar" style="width: 75%">75%</div>
+                <div class="progress-bar" id="progressBar" style="width: 0%">0%</div>
             </div>
             
             <div class="progress-stats">
                 <div class="stat-card">
-                    <div class="stat-label">Target</div>
-                    <div class="stat-value" id="targetDisplay">200 meters</div>
+                    <div class="stat-label">Overall Target</div>
+                    <div class="stat-value" id="overallTargetDisplay">0 units</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-label">Actual</div>
-                    <div class="stat-value" id="actualDisplay">150 meters</div>
+                    <div class="stat-label">Progress to Date</div>
+                    <div class="stat-value" id="overallProgressDisplay">0 units</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-label">Variance</div>
-                    <div class="stat-value variance-negative" id="varianceDisplay">-50 meters</div>
+                    <div class="stat-label">Overall Variance</div>
+                    <div class="stat-value variance-negative" id="overallVarianceDisplay">0 units</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Remaining</div>
+                    <div class="stat-value" id="remainingDisplay">0 units</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-label">Daily Income</div>
-                    <div class="stat-value" id="dailyIncomeStat">R 2,740</div>
+                    <div class="stat-value" id="dailyIncomeStat">R 0</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-label">Daily P/L</div>
-                    <div class="stat-value" id="dailyProfitStat">R 822</div>
+                    <div class="stat-value" id="dailyProfitStat">R 0</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-label">Days Left</div>
-                    <div class="stat-value" id="daysToCompletion">15 days</div>
+                    <div class="stat-value" id="daysToCompletion">0 days</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-label">Schedule Variance</div>
-                    <div class="stat-value variance-negative" id="scheduleVariance">-25%</div>
+                    <div class="stat-value" id="scheduleVariance">0%</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-label">Burn Rate</div>
-                    <div class="stat-value" id="burnRate">R 11,667/day</div>
+                    <div class="stat-value" id="burnRate">R 0/day</div>
                 </div>
             </div>
         </div>
@@ -1141,7 +1289,7 @@
             <button class="btn btn-success" onclick="syncWithSheets()"><i class="fas fa-cloud-upload-alt"></i> Sync Now</button>
             <button class="btn btn-primary" onclick="generatePDF()"><i class="fas fa-file-pdf"></i> Export PDF</button>
             <button class="btn btn-primary" onclick="exportToExcel()"><i class="fas fa-file-excel"></i> Export Excel</button>
-            <button class="btn btn-warning" onclick="updateMetrics()"><i class="fas fa-calculator"></i> Recalculate</button>
+            <button class="btn btn-warning" onclick="updateAllCalculations()"><i class="fas fa-calculator"></i> Recalculate</button>
         </div>
 
         <!-- Projects Table -->
@@ -1161,7 +1309,8 @@
                         <th>Cost Center</th>
                         <th>Supervisor</th>
                         <th>Start Date</th>
-                        <th>Progress</th>
+                        <th>Overall Progress</th>
+                        <th>Daily Progress</th>
                         <th>Daily P/L</th>
                         <th>Status</th>
                         <th>Actions</th>
@@ -1180,7 +1329,7 @@
                 <div class="chart-tabs">
                     <span class="chart-tab active" onclick="switchChart('financial')">Financial</span>
                     <span class="chart-tab" onclick="switchChart('progress')">Progress</span>
-                    <span class="chart-tab" onclick="switchChart('resources')">Resources</span>
+                    <span class="chart-tab" onclick="switchChart('daily')">Daily Performance</span>
                 </div>
             </div>
             <div class="chart-grid" id="chartGrid">
@@ -1192,7 +1341,6 @@
     <script>
         // Configuration
         const CONFIG = {
-            // Replace this URL with your Google Apps Script Web App URL after deployment
             GOOGLE_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbzD-9VmRgfcZKGnwCIbCZF_oybxawyiYXkiF-9iHlQEKpAYucclZ9aWAr_eJRdm7IXN/exec',
             SHEET_ID: '1eGa1jErIa2bQgyVqz0XelQFpkJ6LFch0-NGccX8JP9s',
             SHEET_NAME: 'Projects Manager',
@@ -1217,16 +1365,18 @@
             document.getElementById('currentDate').value = today;
             document.getElementById('durationNumber').value = '30';
             calculateDates();
-            updateMetrics();
+            updateAllCalculations();
             loadProjectsFromSheets();
             initializeGanttChart();
             initializeCharts();
             
             // Add event listeners for real-time updates
-            document.getElementById('totalInvoiced').addEventListener('input', updateMetrics);
-            document.getElementById('totalCosts').addEventListener('input', updateMetrics);
-            document.getElementById('targetValue').addEventListener('input', updateMetrics);
-            document.getElementById('actualProgress').addEventListener('input', updateMetrics);
+            document.getElementById('totalInvoiced').addEventListener('input', updateAllCalculations);
+            document.getElementById('totalCosts').addEventListener('input', updateAllCalculations);
+            document.getElementById('overallTargetValue').addEventListener('input', updateAllCalculations);
+            document.getElementById('overallProgress').addEventListener('input', updateAllCalculations);
+            document.getElementById('dailyTargetValue').addEventListener('input', updateAllCalculations);
+            document.getElementById('actualProgress').addEventListener('input', updateAllCalculations);
         }
 
         function startAutoSync() {
@@ -1236,12 +1386,12 @@
 
         // Format number with commas for ZAR currency
         function formatZAR(number) {
-            return 'R ' + number.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            return 'R ' + Number(number).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         }
 
-        // Format number with commas
+        // Format number
         function formatNumber(number) {
-            return number.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            return Number(number).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         }
 
         // Show notification
@@ -1274,7 +1424,7 @@
                 document.querySelectorAll('.cost-center-btn').forEach(b => b.classList.remove('active'));
                 this.classList.add('active');
                 currentCostCenter = this.dataset.cost;
-                updateMetrics();
+                updateAllCalculations();
                 showNotification(`Switched to ${this.textContent}`, 'info');
             });
         });
@@ -1308,29 +1458,29 @@
                     document.getElementById('currentDate').value = today;
                 }
                 
-                updateMetrics();
+                updateAllCalculations();
             }
         }
 
-        function updateMetrics() {
-            // Get values
+        function updateAllCalculations() {
+            // Get financial values
             const totalInvoiced = parseFloat(document.getElementById('totalInvoiced').value) || 0;
             const totalCosts = parseFloat(document.getElementById('totalCosts').value) || 0;
             const durationNumber = parseInt(document.getElementById('durationNumber').value) || 1;
             const durationType = document.getElementById('durationType').value;
             
-            // Calculate days
+            // Calculate total days
             let totalDays = durationNumber;
             if (durationType === 'months') totalDays = durationNumber * 30;
             if (durationType === 'years') totalDays = durationNumber * 365;
             
-            // Calculate daily metrics
-            const dailyIncome = totalInvoiced / totalDays;
-            const dailyExpenses = totalCosts / totalDays;
+            // Calculate daily financial metrics
+            const dailyIncome = totalDays > 0 ? totalInvoiced / totalDays : 0;
+            const dailyExpenses = totalDays > 0 ? totalCosts / totalDays : 0;
             const dailyProfit = dailyIncome - dailyExpenses;
-            const burnRate = totalCosts / totalDays;
+            const burnRate = totalDays > 0 ? totalCosts / totalDays : 0;
             
-            // Update display with ZAR formatting
+            // Update financial displays
             document.getElementById('dailyIncome').textContent = formatZAR(dailyIncome);
             document.getElementById('dailyExpenses').textContent = formatZAR(dailyExpenses);
             document.getElementById('dailyProfit').textContent = formatZAR(dailyProfit);
@@ -1338,33 +1488,67 @@
             document.getElementById('dailyProfitStat').textContent = formatZAR(dailyProfit);
             document.getElementById('burnRate').textContent = formatZAR(burnRate) + '/day';
             
-            // Update progress
-            const targetValue = parseFloat(document.getElementById('targetValue').value) || 0;
-            const actualValue = parseFloat(document.getElementById('actualProgress').value) || 0;
-            const targetMeasure = document.getElementById('targetMeasure').value;
+            // Get overall project progress values
+            const overallTarget = parseFloat(document.getElementById('overallTargetValue').value) || 0;
+            const overallProgress = parseFloat(document.getElementById('overallProgress').value) || 0;
+            const overallMeasure = document.getElementById('overallTargetMeasure').value;
             
-            const variance = actualValue - targetValue;
-            const progressPercent = targetValue > 0 ? (actualValue / targetValue) * 100 : 0;
+            // Calculate overall project metrics
+            const overallVariance = overallProgress - overallTarget;
+            const overallProgressPercent = overallTarget > 0 ? (overallProgress / overallTarget) * 100 : 0;
+            const remaining = overallTarget - overallProgress;
             
-            document.getElementById('targetDisplay').textContent = targetValue + ' ' + targetMeasure;
-            document.getElementById('actualDisplay').textContent = actualValue + ' ' + targetMeasure;
-            document.getElementById('varianceDisplay').textContent = (variance >= 0 ? '+' : '') + variance + ' ' + targetMeasure;
-            document.getElementById('varianceDisplay').className = `stat-value ${variance >= 0 ? 'variance-positive' : 'variance-negative'}`;
+            // Update overall project displays
+            document.getElementById('overallTargetDisplay').textContent = overallTarget + ' ' + overallMeasure;
+            document.getElementById('overallProgressDisplay').textContent = overallProgress + ' ' + overallMeasure;
+            document.getElementById('overallVarianceDisplay').textContent = (overallVariance >= 0 ? '+' : '') + overallVariance + ' ' + overallMeasure;
+            document.getElementById('overallVarianceDisplay').className = `stat-value ${overallVariance >= 0 ? 'variance-positive' : 'variance-negative'}`;
+            document.getElementById('remainingDisplay').textContent = remaining + ' ' + overallMeasure;
             
-            document.getElementById('progressBar').style.width = `${Math.min(progressPercent, 100)}%`;
-            document.getElementById('progressBar').textContent = `${Math.round(progressPercent)}%`;
+            // Update progress bar with overall project progress
+            document.getElementById('progressBar').style.width = `${Math.min(overallProgressPercent, 100)}%`;
+            document.getElementById('progressBar').textContent = `${Math.round(overallProgressPercent)}%`;
             
-            // Update status badge
+            // Get daily target values
+            const dailyTarget = parseFloat(document.getElementById('dailyTargetValue').value) || 0;
+            const dailyActual = parseFloat(document.getElementById('actualProgress').value) || 0;
+            const dailyMeasure = document.getElementById('dailyTargetMeasure').value;
+            
+            // Calculate daily metrics
+            const dailyVariance = dailyActual - dailyTarget;
+            const dailyAchievementPercent = dailyTarget > 0 ? (dailyActual / dailyTarget) * 100 : 0;
+            
+            // Update daily performance displays
+            document.getElementById('dailyTargetDisplay').textContent = dailyTarget + ' ' + dailyMeasure;
+            document.getElementById('dailyActualDisplay').textContent = dailyActual + ' ' + dailyMeasure;
+            document.getElementById('dailyVarianceDisplay').textContent = (dailyVariance >= 0 ? '+' : '') + dailyVariance + ' ' + dailyMeasure;
+            document.getElementById('dailyVariancePercent').textContent = (dailyAchievementPercent - 100).toFixed(1) + '%';
+            document.getElementById('dailyAchievement').textContent = dailyAchievementPercent.toFixed(1) + '%';
+            
+            // Update daily status badge
+            const dailyStatusBadge = document.getElementById('dailyStatusBadge');
+            if (dailyAchievementPercent >= 100) {
+                dailyStatusBadge.textContent = 'Target Achieved';
+                dailyStatusBadge.style.background = '#43e97b20';
+                dailyStatusBadge.style.color = '#43e97b';
+            } else if (dailyAchievementPercent >= 80) {
+                dailyStatusBadge.textContent = 'Near Target';
+                dailyStatusBadge.style.background = '#fee14020';
+                dailyStatusBadge.style.color = '#fee140';
+            } else {
+                dailyStatusBadge.textContent = 'Behind Target';
+                dailyStatusBadge.style.background = '#fa709a20';
+                dailyStatusBadge.style.color = '#fa709a';
+            }
+            
+            // Update overall project status badge
             const statusBadge = document.getElementById('statusBadge');
-            if (progressPercent >= 90) {
+            if (overallProgressPercent >= 100) {
                 statusBadge.className = 'progress-badge completed';
-                statusBadge.innerHTML = '<i class="fas fa-check-circle"></i> Completed';
-            } else if (progressPercent >= 70) {
-                statusBadge.className = 'progress-badge on-track';
-                statusBadge.innerHTML = '<i class="fas fa-check-circle"></i> On Track';
+                statusBadge.innerHTML = '<i class="fas fa-check-circle"></i> Completed - 100%';
             } else {
                 statusBadge.className = 'progress-badge at-risk';
-                statusBadge.innerHTML = '<i class="fas fa-exclamation-triangle"></i> At Risk';
+                statusBadge.innerHTML = `<i class="fas fa-spinner"></i> In Progress - ${Math.round(overallProgressPercent)}% Complete`;
             }
             
             // Calculate days to completion and variance
@@ -1382,8 +1566,8 @@
                 const daysRemaining = Math.ceil((end - current) / (1000 * 60 * 60 * 24));
                 
                 // Calculate expected progress based on time elapsed
-                const expectedProgress = (daysElapsed / totalProjectDays) * 100;
-                const timeVariance = progressPercent - expectedProgress;
+                const expectedProgress = totalProjectDays > 0 ? (daysElapsed / totalProjectDays) * 100 : 0;
+                const timeVariance = overallProgressPercent - expectedProgress;
                 
                 document.getElementById('daysToCompletion').textContent = daysRemaining + ' days';
                 
@@ -1449,22 +1633,22 @@
                     </div>
                 </div>
                 <div class="chart-card">
-                    <h4>Progress Trend</h4>
+                    <h4>Overall Progress Trend</h4>
                     <div style="height: 200px; display: flex; align-items: flex-end; gap: 10px; margin-top: 20px;">
                         <div style="flex: 1; text-align: center;">
-                            <div style="height: 180px; width: 100%; background: linear-gradient(180deg, #1e3c72, #2a5298); border-radius: 10px 10px 0 0;"></div>
+                            <div style="height: 90px; width: 100%; background: linear-gradient(180deg, #1e3c72, #2a5298); border-radius: 10px 10px 0 0;"></div>
                             <span style="font-size: 12px;">Week 1</span>
                         </div>
                         <div style="flex: 1; text-align: center;">
-                            <div style="height: 150px; width: 100%; background: linear-gradient(180deg, #1e3c72, #2a5298); border-radius: 10px 10px 0 0;"></div>
+                            <div style="height: 120px; width: 100%; background: linear-gradient(180deg, #1e3c72, #2a5298); border-radius: 10px 10px 0 0;"></div>
                             <span style="font-size: 12px;">Week 2</span>
                         </div>
                         <div style="flex: 1; text-align: center;">
-                            <div style="height: 120px; width: 100%; background: linear-gradient(180deg, #1e3c72, #2a5298); border-radius: 10px 10px 0 0;"></div>
+                            <div style="height: 150px; width: 100%; background: linear-gradient(180deg, #1e3c72, #2a5298); border-radius: 10px 10px 0 0;"></div>
                             <span style="font-size: 12px;">Week 3</span>
                         </div>
                         <div style="flex: 1; text-align: center;">
-                            <div style="height: 90px; width: 100%; background: linear-gradient(180deg, #1e3c72, #2a5298); border-radius: 10px 10px 0 0;"></div>
+                            <div style="height: 180px; width: 100%; background: linear-gradient(180deg, #1e3c72, #2a5298); border-radius: 10px 10px 0 0;"></div>
                             <span style="font-size: 12px;">Week 4</span>
                         </div>
                     </div>
@@ -1476,8 +1660,45 @@
             document.querySelectorAll('.chart-tab').forEach(tab => tab.classList.remove('active'));
             event.target.classList.add('active');
             
-            // Update charts based on type
-            initializeCharts(); // This would be customized based on type
+            if (type === 'daily') {
+                document.getElementById('chartGrid').innerHTML = `
+                    <div class="chart-card">
+                        <h4>Daily Performance - Last 7 Days</h4>
+                        <div style="height: 200px; display: flex; align-items: flex-end; gap: 10px; margin-top: 20px;">
+                            <div style="flex: 1; text-align: center;">
+                                <div style="height: 140px; width: 100%; background: linear-gradient(180deg, #1e3c72, #2a5298); border-radius: 10px 10px 0 0;"></div>
+                                <span style="font-size: 12px;">Mon</span>
+                            </div>
+                            <div style="flex: 1; text-align: center;">
+                                <div style="height: 160px; width: 100%; background: linear-gradient(180deg, #1e3c72, #2a5298); border-radius: 10px 10px 0 0;"></div>
+                                <span style="font-size: 12px;">Tue</span>
+                            </div>
+                            <div style="flex: 1; text-align: center;">
+                                <div style="height: 120px; width: 100%; background: linear-gradient(180deg, #1e3c72, #2a5298); border-radius: 10px 10px 0 0;"></div>
+                                <span style="font-size: 12px;">Wed</span>
+                            </div>
+                            <div style="flex: 1; text-align: center;">
+                                <div style="height: 180px; width: 100%; background: linear-gradient(180deg, #1e3c72, #2a5298); border-radius: 10px 10px 0 0;"></div>
+                                <span style="font-size: 12px;">Thu</span>
+                            </div>
+                            <div style="flex: 1; text-align: center;">
+                                <div style="height: 150px; width: 100%; background: linear-gradient(180deg, #1e3c72, #2a5298); border-radius: 10px 10px 0 0;"></div>
+                                <span style="font-size: 12px;">Fri</span>
+                            </div>
+                            <div style="flex: 1; text-align: center;">
+                                <div style="height: 90px; width: 100%; background: linear-gradient(180deg, #1e3c72, #2a5298); border-radius: 10px 10px 0 0;"></div>
+                                <span style="font-size: 12px;">Sat</span>
+                            </div>
+                            <div style="flex: 1; text-align: center;">
+                                <div style="height: 100px; width: 100%; background: linear-gradient(180deg, #1e3c72, #2a5298); border-radius: 10px 10px 0 0;"></div>
+                                <span style="font-size: 12px;">Sun</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                initializeCharts();
+            }
         }
 
         // Google Sheets Integration
@@ -1514,32 +1735,35 @@
         function loadSampleProjects() {
             projects = [
                 {
-                    ProjectID: 'PROJ-0001',
+                    ProjectID: 'PRJ-0001',
                     ProjectName: 'Network Infrastructure Upgrade',
                     CostCenter: 'Aqua Telecoms',
                     Supervisor: 'John Smith',
                     StartDate: '2024-01-15',
-                    Progress: 75,
+                    OverallProgress: 45,
+                    DailyProgress: 90,
                     DailyPL: 821.92,
-                    Status: 'at-risk'
+                    Status: 'in-progress'
                 },
                 {
-                    ProjectID: 'PROJ-0002',
+                    ProjectID: 'PRJ-0002',
                     ProjectName: 'Solar Installation Phase 2',
                     CostCenter: 'Nkanyezi Projects',
                     Supervisor: 'Sarah Johnson',
                     StartDate: '2024-02-01',
-                    Progress: 90,
+                    OverallProgress: 75,
+                    DailyProgress: 110,
                     DailyPL: 1234.56,
                     Status: 'on-track'
                 },
                 {
-                    ProjectID: 'PROJ-0003',
+                    ProjectID: 'PRJ-0003',
                     ProjectName: 'Fiber Optic Expansion',
                     CostCenter: 'DI Solutions',
                     Supervisor: 'Mike Peters',
                     StartDate: '2024-03-10',
-                    Progress: 45,
+                    OverallProgress: 30,
+                    DailyProgress: 65,
                     DailyPL: 543.21,
                     Status: 'at-risk'
                 }
@@ -1553,17 +1777,46 @@
             
             projects.forEach(project => {
                 const row = tableBody.insertRow();
+                
+                let statusClass = 'status-at-risk';
+                let statusText = 'In Progress';
+                if (project.Status === 'on-track') {
+                    statusClass = 'status-on-track';
+                    statusText = 'On Track';
+                } else if (project.Status === 'completed') {
+                    statusClass = 'status-completed';
+                    statusText = 'Completed';
+                } else if (project.Status === 'in-progress') {
+                    statusClass = 'status-at-risk';
+                    statusText = 'In Progress';
+                }
+
                 row.innerHTML = `
                     <td>${project.ProjectID || 'N/A'}</td>
-                    <td>${project.ProjectName || 'Unnamed'}</td>
+                    <td><strong>${project.ProjectName || 'Unnamed'}</strong></td>
                     <td>${project.CostCenter || 'N/A'}</td>
                     <td>${project.Supervisor || 'Unassigned'}</td>
                     <td>${project.StartDate || 'Not set'}</td>
-                    <td>${project.Progress || 0}%</td>
+                    <td>
+                        <div class="progress-cell">
+                            <span>${project.OverallProgress || 0}%</span>
+                            <div class="progress-bar-small">
+                                <div class="progress-fill" style="width: ${project.OverallProgress || 0}%"></div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="progress-cell">
+                            <span>${project.DailyProgress || 0}%</span>
+                            <div class="progress-bar-small">
+                                <div class="progress-fill" style="width: ${project.DailyProgress || 0}%; background: #43e97b;"></div>
+                            </div>
+                        </div>
+                    </td>
                     <td>${formatZAR(project.DailyPL || 0)}</td>
-                    <td><span class="status-badge ${project.Status || 'at-risk'}">
-                        <i class="fas ${project.Status === 'on-track' ? 'fa-check-circle' : 'fa-exclamation-triangle'}"></i>
-                        ${project.Status === 'on-track' ? 'On Track' : 'At Risk'}
+                    <td><span class="status-badge ${statusClass}">
+                        <i class="fas ${project.Status === 'on-track' ? 'fa-check-circle' : project.Status === 'completed' ? 'fa-check-double' : 'fa-spinner'}"></i>
+                        ${statusText}
                     </span></td>
                     <td>
                         <div class="action-icons">
@@ -1578,7 +1831,7 @@
         }
 
         async function saveToSheets() {
-            if (CONFIG.GOOGLE_SCRIPT_URL === 'YOUR_GOOGLE_SCRIPT_URL_HERE') {
+            if (CONFIG.GOOGLE_SCRIPT_URL === 'https://script.google.com/macros/s/AKfycbxICE6y2-dm2yOy6ZpSEqlYKCkYzA6ctNPCxyUgjLJaPSEkThNbe2unnqvQple2Aj09Wg/exec') {
                 showNotification('Please configure Google Script URL first', 'error');
                 return;
             }
@@ -1598,15 +1851,19 @@
                     projectManager: document.getElementById('projectManager').value,
                     totalInvoiced: document.getElementById('totalInvoiced').value,
                     totalCosts: document.getElementById('totalCosts').value,
-                    targetValue: document.getElementById('targetValue').value,
-                    targetMeasure: document.getElementById('targetMeasure').value,
+                    overallTarget: document.getElementById('overallTargetValue').value,
+                    overallMeasure: document.getElementById('overallTargetMeasure').value,
+                    overallProgress: document.getElementById('overallProgress').value,
+                    dailyTarget: document.getElementById('dailyTargetValue').value,
+                    dailyMeasure: document.getElementById('dailyTargetMeasure').value,
                     actualProgress: document.getElementById('actualProgress').value,
                     startDate: document.getElementById('startDate').value,
                     endDate: document.getElementById('endDate').value,
                     currentDate: document.getElementById('currentDate').value,
+                    durationNumber: document.getElementById('durationNumber').value,
+                    durationType: document.getElementById('durationType').value,
                     comments: document.getElementById('supervisorComments').value,
-                    challenges: selectedChallenges.join(', '),
-                    status: document.getElementById('statusBadge').textContent.trim()
+                    challenges: selectedChallenges.join(', ')
                 };
 
                 const formData = new FormData();
@@ -1622,7 +1879,7 @@
                 
                 if (data.success) {
                     showNotification('Project saved to Google Sheets successfully!', 'success');
-                    await loadProjectsFromSheets(); // Refresh the list
+                    await loadProjectsFromSheets();
                 } else {
                     throw new Error(data.error);
                 }
@@ -1663,19 +1920,18 @@
 
         function refreshData() {
             loadProjectsFromSheets();
-            updateMetrics();
+            updateAllCalculations();
             showNotification('Data refreshed', 'info');
         }
 
         function viewProject(projectId) {
             const project = projects.find(p => p.ProjectID === projectId);
             if (project) {
-                // Populate form with project data
                 document.getElementById('projectName').value = project.ProjectName || '';
                 document.getElementById('location').value = project.Location || '';
                 document.getElementById('supervisor').value = project.Supervisor || '';
                 document.getElementById('projectManager').value = project.ProjectManager || '';
-                
+                updateAllCalculations();
                 showNotification(`Loaded project: ${project.ProjectName}`, 'info');
             }
         }
