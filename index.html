@@ -48,7 +48,19 @@
             gap: 20px;
         }
 
-        .logo h1 {
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-container img {
+            height: 50px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        .logo-container h1 {
             color: #333;
             font-size: 32px;
             font-weight: 700;
@@ -854,9 +866,13 @@
                 grid-template-columns: 1fr;
             }
             
-            .logo {
+            .logo-container {
                 flex-direction: column;
                 align-items: flex-start;
+            }
+            
+            .logo-container img {
+                height: 40px;
             }
         }
     </style>
@@ -877,9 +893,9 @@
         <!-- Header -->
         <div class="header">
             <div class="logo">
-                <div>
+                <div class="logo-container">
+                    <img src="logo.png" alt="Onpoint Group Logo" onerror="this.style.display='none'">
                     <h1><i class="fas fa-chart-line"></i> Onpoint Group</h1>
-                    <p style="color: #666; margin-top: 5px;">Enterprise Project Management Suite</p>
                 </div>
                 <div class="sync-status online" id="syncStatus">
                     <i class="fas fa-cloud-upload-alt"></i>
@@ -1466,7 +1482,7 @@
 
         // Google Sheets Integration
         async function loadProjectsFromSheets() {
-            if (CONFIG.GOOGLE_SCRIPT_URL === 'https://script.google.com/macros/s/AKfycbzD-9VmRgfcZKGnwCIbCZF_oybxawyiYXkiF-9iHlQEKpAYucclZ9aWAr_eJRdm7IXN/exec') {
+            if (CONFIG.GOOGLE_SCRIPT_URL === 'YOUR_GOOGLE_SCRIPT_URL_HERE') {
                 // Demo mode - load sample data
                 loadSampleProjects();
                 return;
